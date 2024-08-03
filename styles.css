@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    color: var(--text-color, #000); /* Default text color */
+}
+
+.sidebar {
+    background-color: #cfecec;
+    width: 200px;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar a {
+    display: block;
+    color: var(--text-color, #006064);
+    padding: 10px 0;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.sidebar a:hover {
+    background-color: #b2ebf2;
+    color: var(--text-color, #004d40);
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: #e0f7fa;
+    overflow: auto;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+h2 {
+    color: var(--text-color, #004d40);
+}
+
+form label {
+    display: block;
+    margin-top: 10px;
+    color: var(--text-color, #00796b);
+}
+
+form input, form select, form button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+form button {
+    background-color: #4db6ac;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+form button:hover {
+    background-color: #00796b;
+}
+
+.fc-event {
+    border: 1px solid black !important;
+}
+
+#calendarView {
+    background-color: white;
+    min-height: 800px;
+    height: 100%;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+#taskListView {
+    background-color: white;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.task-item {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-item input, .task-item select {
+    margin-top: 5px;
+}
+
+.task-item button {
+    margin-top: 10px;
+    background-color: #f44336;
+    color: white;   
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.task-item button:hover {
+    background-color: #d32f2f;
+}

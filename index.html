@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Turtles</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+    <script src="scripts.js" defer></script>
+</head>
+<body onload="loadUserData()">
+    <div class="sidebar">
+        <a href="#" onclick="showSection('input')">Task Input</a>
+        <a href="#" onclick="showSection('taskList')">Task List</a>
+        <a href="#" onclick="showSection('calendar')">Calendar</a>
+        <a href="#" onclick="showSection('education')">Educational Content</a>
+        <a href="#" onclick="showSection('settings')">Settings</a>
+        <a href="#" onclick="showSection('login')" id="loginButton">Login</a>
+    </div>
+    <div class="content">
+        <div id="input" class="section" style="display: none;">
+            <h2>Task Input</h2>
+            <form id="taskForm">
+                <label for="taskName">Task Name:</label>
+                <input type="text" id="taskName" name="taskName" required>
+                <label for="taskTime">Estimated Time (hours):</label>
+                <input type="number" id="taskTime" name="taskTime" required>
+                <label for="taskType">Task Type:</label>
+                <select id="taskType" name="taskType">
+                    <option value="assignment">Assignment</option>
+                    <option value="test">Test</option>
+                </select>
+                <label for="taskDate">Due Date/Test Date (YYYY-MM-DDTHH:MM):</label>
+                <input type="datetime-local" id="taskDate" name="taskDate" required>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+        <div id="taskList" class="section" style="display: none;">
+            <h2>Task List</h2>
+            <div id="taskListView"></div>
+        </div>
+        <div id="calendar" class="section" style="display: none;">
+            <h2>Calendar (note - if calendar doesn't display, try switching to week/day view)</h2>
+            <div id="calendarView"></div>
+        </div>
+        <div id="settings" class="section" style="display: none;">
+            <h2>Settings</h2>
+            <form id="settingsForm">
+                <label for="sidebarColor">Sidebar Color:</label>
+                <input type="color" id="sidebarColor" name="sidebarColor">
+                <label for="contentColor">Content Background Color:</label>
+                <input type="color" id="contentColor" name="contentColor">
+                <label for="textColor">Text Color:</label>
+                <input type="color" id="textColor" name="textColor">
+                <button type="submit">Save Settings</button>
+            </form>
+        </div>
+        <div id="login" class="section" style="display: none;">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" onclick="showSection('signup')">Sign Up</a></p>
+        </div>
+        <div id="signup" class="section" style="display: none;">
+            <h2>Sign Up</h2>
+            <form id="signupForm">
+                <label for="email">Email:</label>
+                <input type="email" id="emailSignup" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="passwordSignup" name="password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="#" onclick="showSection('login')">Login</a></p>
+        </div>
+        <div id="education" class="section" style="display: none;">
+            <h2>Educational Content</h2>
+            <p>Placeholder for learning materials, practice tests, etc.</p>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+    <script>    
+    
+        window.showSection = function showSection(sectionId) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+        document.getElementById(sectionId).classList.add('active');
+            calendar.render();
+            calendar.updateSize();
+    }
+    function loadUserData() {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            tasks = JSON.parse(localStorage.getItem(`${currentUser}-tasks`) || '[]');
+            renderTaskList();
+
+            const settings = JSON.parse(localStorage.getItem(`${currentUser}-settings`) || '{}');
+            document.getElementById('sidebarColor').value = settings.sidebarColor || '#cfecec';
+            document.getElementById('contentColor').value = settings.contentColor || '#e0f7fa';
+            document.getElementById('textColor').value = settings.textColor || '#000000';
+            document.querySelector('.sidebar').style.backgroundColor = settings.sidebarColor || '#cfecec';
+            document.querySelector('.content').style.backgroundColor = settings.contentColor || '#e0f7fa';
+            document.documentElement.style.setProperty('--text-color', settings.textColor || '#000000');
+        }
+    }
+    function renderTaskList() {
+        const taskListView = document.getElementById('taskListView');
+        taskListView.innerHTML = '';
+        tasks.forEach(task => {
+            const taskItem = document.createElement('div');
+            taskItem.className = 'task-item';
+            taskItem.innerHTML = `
+                <label>Task Name:</label>
+                <input type="text" value="${task.name}" data-id="${task.id}" data-field="name" onchange="updateTask(this)">
+                <label>Estimated Time (hours):</label>
+                <input type="number" value="${task.time}" data-id="${task.id}" data-field="time" onchange="updateTask(this)">
+                <label>Task Type:</label>
+                <select data-id="${task.id}" data-field="type" onchange="updateTask(this)">
+                    <option value="assignment" ${task.type === 'assignment' ? 'selected' : ''}>Assignment</option>
+                    <option value="test" ${task.type === 'test' ? 'selected' : ''}>Test</option>
+                </select>
+                <label>Due Date/Test Date (YYYY-MM-DDTHH:MM):</label>
+                <input type="datetime-local" value="${task.date}" data-id="${task.id}" data-field="date" onchange="updateTask(this)">
+                <button onclick="deleteTask('${task.id}')">Delete Task</button>
+            `;
+            taskListView.appendChild(taskItem);
+        });
+    }
+
+    </script>
+</body>
+</html>
