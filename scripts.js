@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
     calendar.updateSize();
 
+
     // Show initial section based on login state
     if (localStorage.getItem('loggedIn') === 'true') {
         document.getElementById('loginButton').textContent = 'Logout';
@@ -34,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         document.getElementById('loginButton').textContent = 'Login';
         document.getElementById('loginButton').onclick = () => showSection('login');
-        showSection('login');
     }
 
     // Handle form submissions

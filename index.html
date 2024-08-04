@@ -11,10 +11,11 @@
 </head>
 <body onload="loadUserData()">
     <div class="sidebar">
+        <a href="#" onclick="showSection('home')"><img src = "/images/studyturtlesbrand.png" alt = "Study Turtles"></a>
         <a href="#" onclick="showSection('input')">Task Input</a>
         <a href="#" onclick="showSection('taskList')">Task List</a>
         <a href="#" onclick="showSection('calendar')">Calendar</a>
-        <a href="#" onclick="showSection('education')">Educational Content</a>
+        <a href="#" onclick="showSection('education')">Learn</a>
         <a href="#" onclick="showSection('settings')">Settings</a>
         <a href="#" onclick="showSection('login')" id="loginButton">Login</a>
     </div>
@@ -43,6 +44,20 @@
         <div id="calendar" class="section" style="display: none;">
             <h2>Calendar (note - if calendar doesn't display, try switching to week/day view)</h2>
             <div id="calendarView"></div>
+        </div>
+        <div id="home" class="section" style="display: none;">
+            <h2 style = "text-align: center;">Welcome to Study Turtles!</h2>
+            <p style = "text-align: center; font-size: 12px;    ">Created by Akhil Yalamanchili 2023</p>
+            <p style = "text-align: center; margin: 50px 200px; font-size: 20px;">Study Turtles is the last productivity tool that you will ever use. It is your ideal workspace to help you maximize your academic and professional career. Some of the reasons that you should use Study Turtles: </p>
+            <ul>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> Flagship AI Scheduling - Send Turt your due dates and test dates, and he will schedule you time to finish all of your assignments and study for the test. </li>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> All Your Tools in One - Your Study Turtles Workspace contains all of the tools that you would normally have open. All features are listed on the website (more added daily).</li>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> Expert AI Tutor (AP Speciality) - Turt uses the power of GPT-4, data from acclaimed textbooks, and the College Board CED to teach you like a professional tutor. .</li>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> Optimal Studying - Turt uses optimal study intervals and psychology to maximize your productivity. This includes spaced repitition and nocturnal bias.</li>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> Personalized Workspace - Customize your workspace using Study Turtles. You can move all of your applications and build your perfect setup to work cohesively with you.</li>
+                <li style = "text-align: center; margin: 20px 60px; font-size: 16px;"> Gamify Your Learning - When you complete your tasks that Turt schedules for you, you can earn Turtle Coins. Turtle Coins allow you to buy cosmetics for Turt and buy minigames.</li>
+            </ul>
+            <p style = "text-align: center; margin: 50px 200px; font-size: 20px;">To get started, input some tasks on the left, or make an account to save your progress</p>
         </div>
         <div id="settings" class="section" style="display: none;">
             <h2>Settings</h2>
@@ -85,7 +100,10 @@
     </div>
     <script src="scripts.js"></script>
     <script>    
-    
+        var x=0;
+        if (x==0) {
+        document.getElementById('home').style.display = 'block';}
+        x=x+1;
         window.showSection = function showSection(sectionId) {
         const sections = document.querySelectorAll('.section');
         sections.forEach(section => {
@@ -95,6 +113,7 @@
         document.getElementById(sectionId).classList.add('active');
             calendar.render();
             calendar.updateSize();
+            alert(sectionId);
     }
     function loadUserData() {
         const currentUser = localStorage.getItem('currentUser');
@@ -134,7 +153,15 @@
             taskListView.appendChild(taskItem);
         });
     }
-
+    if (localStorage.getItem('loggedIn') === 'true') {
+        document.getElementById('loginButton').textContent = 'Logout';
+        document.getElementById('loginButton').onclick = logout;
+        loadUserData();
+        showSection('home');
+    } else {
+        document.getElementById('loginButton').textContent = 'Login';
+        document.getElementById('loginButton').onclick = () => showSection('login');
+    }
     </script>
 </body>
 </html>

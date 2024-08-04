@@ -6,6 +6,22 @@ body {
     color: var(--text-color, #000); /* Default text color */
 }
 
+img {
+    max-width: 200px;
+
+}
+
+ul {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    list-style-position: inside;
+
+}
+ul li {
+    width: 400px;
+    float: left;
+}
 .sidebar {
     background-color: #cfecec;
     width: 200px;
