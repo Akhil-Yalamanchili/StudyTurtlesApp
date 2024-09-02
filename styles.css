@@ -3,7 +3,7 @@ body {
     display: flex;
     height: 100vh;
     margin: 0;
-    color: var(--text-color, #000); /* Default text color */
+    color: var(--text-color, black); /* Default text color */
 }
 
 img {
@@ -23,7 +23,7 @@ ul li {
     float: left;
 }
 .sidebar {
-    background-color: #cfecec;
+    background-color: rgb(77,182,172);
     width: 200px;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -31,7 +31,7 @@ ul li {
 
 .sidebar a {
     display: block;
-    color: var(--text-color, #006064);
+    color: var(--text-color, rgb(255, 255, 255));
     padding: 10px 0;
     text-decoration: none;
     font-size: 18px;
@@ -45,7 +45,7 @@ ul li {
 .content {
     flex: 1;
     padding: 20px;
-    background-color: #e0f7fa;
+    background-color: #ffffff;
     overflow: auto;
 }
 
@@ -58,13 +58,35 @@ ul li {
 }
 
 h2 {
-    color: var(--text-color, #004d40);
+    color: var(--text-color, rgb(77,182,172));
 }
+
+.calendarInfoButton {
+    background-color: transparent; 
+    max-width: 20px;    
+    border-style: solid;
+    border-color: var(--text-color, rgb(77,182,172));
+    border-width: 1px;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 20px;
+    position: relative;
+    left:110px;
+    top: 0px;
+}
+.displayInfoButton {
+    display: none;
+  }
+.calendarInfoButton:hover + .displayInfoButton {
+    display: inline-block;
+    background-color: red;
+  }
 
 form label {
     display: block;
     margin-top: 10px;
-    color: var(--text-color, #00796b);
+    color: var(--text-color, #000000);
 }
 
 form input, form select, form button {

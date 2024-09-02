@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script src="scripts.js" defer></script>
 </head>
 <body onload="loadUserData()">
@@ -42,7 +45,13 @@
             <div id="taskListView"></div>
         </div>
         <div id="calendar" class="section" style="display: none;">
-            <h2>Calendar (note - if calendar doesn't display, try switching to week/day view)</h2>
+
+            <h2>Calendar </h2>
+            <p style = "width: 150px;"class = "calendarInfoButton">i </p>
+
+
+            <p class = "displayInfoButton">hello</p>
+           
             <div id="calendarView"></div>
         </div>
         <div id="home" class="section" style="display: none;">
@@ -163,5 +172,24 @@
         document.getElementById('loginButton').onclick = () => showSection('login');
     }
     </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyChTGhYEr5eOoJXlMmjz5-pQdVZdsObfuA",
+          authDomain: "study-turtles-9ec95.firebaseapp.com",
+          projectId: "study-turtles-9ec95",
+          storageBucket: "study-turtles-9ec95.appspot.com",
+          messagingSenderId: "457875965283",
+          appId: "1:457875965283:web:30133a5652b85d0be7bf56"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+      </script>
 </body>
 </html>

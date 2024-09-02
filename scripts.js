@@ -1,7 +1,23 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     let tasks = [];
     let calendarEvents = [];
     let calendar; // Define calendar globally
+    let db; // Firestore database reference
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyChTGhYEr5eOoJXlMmjz5-pQdVZdsObfuA",
+        authDomain: "study-turtles-9ec95.firebaseapp.com",
+        projectId: "study-turtles-9ec95",
+        storageBucket: "study-turtles-9ec95.appspot.com",
+        messagingSenderId: "457875965283",
+        appId: "1:457875965283:web:30133a5652b85d0be7bf56"
+      };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    db = firebase.firestore();
 
     const calendarEl = document.getElementById('calendarView');
     calendar = new FullCalendar.Calendar(calendarEl, {
@@ -25,49 +41,47 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
     calendar.updateSize();
 
-
     // Show initial section based on login state
-    if (localStorage.getItem('loggedIn') === 'true') {
-        document.getElementById('loginButton').textContent = 'Logout';
-        document.getElementById('loginButton').onclick = logout;
-        loadUserData();
-        showSection('input');
-    } else {
-        document.getElementById('loginButton').textContent = 'Login';
-        document.getElementById('loginButton').onclick = () => showSection('login');
-    }
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('loginButton').textContent = 'Logout';
+            document.getElementById('loginButton').onclick = logout;
+            loadUserData(user);
+            showSection('input');
+        } else {
+            document.getElementById('loginButton').textContent = 'Login';
+            document.getElementById('loginButton').onclick = () => showSection('login');
+            showSection('login');
+        }
+    });
 
     // Handle form submissions
     document.getElementById('loginForm').addEventListener('submit', function(event) {
-        alert('testingloginFormSubmission');
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const storedPassword = localStorage.getItem(email);
-       
-        if (storedPassword && storedPassword === password) {
-            localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('currentUser', email);
-            alert('Login Successful!');
-            loadUserData();
-            showSection('input');
-        } else {
-            alert('Login Failed: Incorrect email or password');
-        }
+        auth.signInWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                alert('Login Successful!');
+                showSection('input');
+            })
+            .catch(error => {
+                alert('Login Failed: ' + error.message);
+            });
     });
 
     document.getElementById('signupForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('emailSignup').value;
         const password = document.getElementById('passwordSignup').value;
-
-        if (localStorage.getItem(email)) {
-            alert('Signup Failed: User already exists');
-        } else {
-            localStorage.setItem(email, password);
-            alert('Signup Successful! Please log in.');
-            showSection('login');
-        }
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                alert('Signup Successful! Please log in.');
+                showSection('login');
+            })
+            .catch(error => {
+                alert('Signup Failed: ' + error.message);
+            });
     });
 
     document.getElementById('taskForm').addEventListener('submit', function(event) {
@@ -84,13 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
             type: taskType,
             date: taskDate
         };
-
         if (taskType === 'assignment') {
             scheduleAssignment(task);
         } else if (taskType === 'test') {
             scheduleTest(task);
         }
-
         addTaskToList(task);
         saveTasks();
         alert('Task Scheduled!');
@@ -126,9 +138,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.logout = function logout() {
-        localStorage.setItem('loggedIn', 'false');
-        localStorage.removeItem('currentUser');
-        location.reload();
+        auth.signOut().then(() => {
+            document.getElementById('loginButton').textContent = 'Login';
+            showSection('login');
+        });
     }
 
     function generateId() {
@@ -197,37 +210,86 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveTasks() {
-        const currentUser = localStorage.getItem('currentUser');
-        if (currentUser) {
-            localStorage.setItem(`${currentUser}-tasks`, JSON.stringify(tasks));
+        const user = auth.currentUser;
+        if (user) {
+            // Save tasks to Firestore
+            db.collection('users').doc(user.uid).set({
+                tasks: tasks
+            }, { merge: true });
+    
+            // Save calendar events to Firestore
+            const calendarEvents = calendar.getEvents().map(event => ({
+                id: event.id,
+                title: event.title,
+                start: event.start.toISOString(),
+                end: event.end.toISOString(),
+                color: event.backgroundColor
+            }));
+    
+            db.collection('users').doc(user.uid).set({
+                events: calendarEvents
+            }, { merge: true });
         }
     }
 
-    function loadUserData() {
-        const currentUser = localStorage.getItem('currentUser');
-        if (currentUser) {
-            tasks = JSON.parse(localStorage.getItem(`${currentUser}-tasks`) || '[]');
-            renderTaskList();
-
-            const settings = JSON.parse(localStorage.getItem(`${currentUser}-settings`) || '{}');
-            document.getElementById('sidebarColor').value = settings.sidebarColor || '#cfecec';
-            document.getElementById('contentColor').value = settings.contentColor || '#e0f7fa';
-            document.getElementById('textColor').value = settings.textColor || '#000000';
-            document.querySelector('.sidebar').style.backgroundColor = settings.sidebarColor || '#cfecec';
-            document.querySelector('.content').style.backgroundColor = settings.contentColor || '#e0f7fa';
-            document.documentElement.style.setProperty('--text-color', settings.textColor || '#000000');
-        }
+    function loadUserData(user) {
+        db.collection('users').doc(user.uid).get().then((docSnapshot) => {
+            if (docSnapshot.exists) {
+                const data = docSnapshot.data();
+    
+                // Load tasks
+                tasks = data.tasks || [];
+                renderTaskList();
+    
+                // Clear the calendar before adding events
+                calendar.getEvents().forEach(event => event.remove());
+    
+                // Load events onto the calendar
+                const calendarEvents = data.events || [];
+                calendarEvents.forEach(eventData => {
+                    calendar.addEvent({
+                        id: eventData.id,
+                        title: eventData.title,
+                        start: eventData.start,
+                        end: eventData.end,
+                        color: eventData.color
+                    });
+                });
+    
+                // Load settings (as before)
+                const settings = data.settings || {};
+                document.getElementById('sidebarColor').value = settings.sidebarColor || '#cfecec';
+                document.getElementById('contentColor').value = settings.contentColor || '#e0f7fa';
+                document.getElementById('textColor').value = settings.textColor || '#000000';
+                document.querySelector('.sidebar').style.backgroundColor = settings.sidebarColor || '#cfecec';
+                document.querySelector('.content').style.backgroundColor = settings.contentColor || '#e0f7fa';
+                document.documentElement.style.setProperty('--text-color', settings.textColor || '#000000');
+            }
+        });
     }
-
+    function addTaskToCalendar(task) {
+        let eventColor = task.type === 'assignment' ? '#4db6ac' : '#ffcc80'; // Example color coding
+    
+        calendar.addEvent({
+            id: task.id,
+            title: task.name,
+            start: new Date(task.date),
+            end: new Date(new Date(task.date).getTime() + task.time * 60 * 60 * 1000), // Assuming task.time is in hours
+            color: eventColor
+        });
+    }
+    
     function saveSettings() {
-        const currentUser = localStorage.getItem('currentUser');
-        if (currentUser) {
+        const user = auth.currentUser;
+        if (user) {
             const settings = {
                 sidebarColor: document.getElementById('sidebarColor').value,
                 contentColor: document.getElementById('contentColor').value,
                 textColor: document.getElementById('textColor').value
             };
-            localStorage.setItem(`${currentUser}-settings`, JSON.stringify(settings));
+            db.collection('users').doc(user.uid).set({
+                settings: settings
+            }, { merge: true });
         }
     }
 
