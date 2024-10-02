@@ -1,0 +1,163 @@
+
+body {
+    background-color: rgb(27, 24, 37, 0.97);
+    color:rgb(187, 188, 189);
+    font-family: Verdana, Geneva, sans-serif;font-style: normal; font-variant: normal;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+}
+div {
+    text-align: center;
+}
+h1 {
+    color: white;
+}
+.infoText {
+  font-size: 16px; 
+  font-weight: 100; 
+  max-width: 400px; 
+  text-justify: inter-word; 
+  margin-top: 25px;
+  margin: 25px 100px;
+  line-height: 22px;
+
+}
+.lineText {
+  font-weight: 100px; 
+  font-size: 12px; 
+  color: white; 
+  border-radius: 2px; 
+  background-image: repeating-linear-gradient(90deg, rgb(61, 61, 61), rgb(61,61,61) 1px, rgb(90, 90, 90) 1px, rgb(90, 90, 90) 2px); 
+  max-width: 205px; 
+  text-align: center; 
+  border-radius: 25px; 
+  height: 30px; 
+  line-height: 30px;
+  margin-bottom: 20px;
+  margin: 0px 100px;
+
+}
+
+.infoDiv {
+  text-align: left; 
+  margin: 100px auto;
+}
+.infoHeaderText {
+  color: white; 
+  max-width: 350px;
+  margin: 25px 100px 0px;
+
+}
+ *,
+ ::before,
+ ::after {
+   box-sizing: inherit; 
+ }
+
+ html {
+   box-sizing: border-box;
+   font-family:
+     /* Newer browsers */
+     system-ui,
+     /* Safari for OS X and iOS (San Francisco) */
+     -apple-system,
+     /* Chrome < 56 for OS X (San Francisco) */
+     BlinkMacSystemFont,
+     /* Windows */
+     'Segoe UI',
+     /* Android */
+     Roboto,
+     /* Basic web fallback */
+     'Helvetica Neue',
+     Helvetica,
+     Arial,
+     sans-serif,
+     /* Emoji fonts */
+     'Apple Color Emoji',
+     'Segoe UI Emoji',
+     'Segoe UI Symbol',
+     'Noto Color Emoji';
+   font-size: 1em;
+ }
+
+ @media (prefers-reduced-motion: no-preference) {
+   html {
+     scroll-behavior: smooth;
+   }
+ }
+
+ .masthead {
+    background: rgb(27,24,37);
+    background: linear-gradient(180deg, rgba(32,28,44,0.5) 10%, rgba(27,24,37,0.8) 100%);   
+    padding: 1.75rem 0;
+   position: fixed;
+   width: 100%;
+   top: 0;
+  backdrop-filter: blur(7px);
+  height:100px;
+ }
+
+ .container {
+
+   width: min(96%, 1140px); 
+   margin: 0 auto;
+ }
+ 
+ .primary-nav {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+ }
+ 
+ .nav-links {
+   display: flex;
+   list-style: none;
+   margin: 0;
+   padding: 0;
+ }
+ 
+ .nav-links li {
+   margin-left: 50px;
+ }
+
+ .nav-start li {
+  margin-left: 50px;
+}
+ 
+ .nav-links li:first-child {
+   margin-left: 0;
+ }
+ 
+ .nav-link {
+   text-decoration: none;
+   color: rgb(228, 228, 228);
+   font-size: 16px;
+ }
+
+ .nav-start {
+  text-decoration: none;
+  color: rgb(228, 228, 228);
+  font-size: 16px;
+}
+
+.nav-start:hover {
+  background-color: rgba(172, 255, 47, 0.781);
+}
+ 
+ .nav-link:hover {
+   color: rgb(50, 211, 71);
+ } 
+ 
+ .sr-only {
+   position: absolute;
+   overflow: hidden;
+   clip: rect(0, 0, 0, 0);
+   clip-path: inset(100%);
+   width: 1px;
+   height: 1px;
+   padding: 0;
+   border: 0;
+   margin: -1px;
+   white-space: nowrap;
+ }

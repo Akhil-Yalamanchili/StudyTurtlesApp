@@ -119,12 +119,14 @@ form button:hover {
     height: 100%;
     border: 1px solid black;
     padding: 10px;
+    color:black;
 }
 
 #taskListView {
     background-color: white;
     padding: 10px;
     border: 1px solid black;
+    color: black;
 }
 
 .task-item {
@@ -151,4 +153,8 @@ form button:hover {
 
 .task-item button:hover {
     background-color: #d32f2f;
+}
+
+.eventTextColor {
+    color: black;
 }

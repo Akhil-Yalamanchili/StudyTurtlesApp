@@ -3,8 +3,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     let tasks = [];
     let calendarEvents = [];
-    let calendar; // Define calendar globally
-    let db; // Firestore database reference
+    let calendar; 
+    let db; 
 
     const firebaseConfig = {
         apiKey: "AIzaSyChTGhYEr5eOoJXlMmjz5-pQdVZdsObfuA",
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
         messagingSenderId: "457875965283",
         appId: "1:457875965283:web:30133a5652b85d0be7bf56"
       };
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     db = firebase.firestore();
@@ -41,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
     calendar.updateSize();
 
-    // Show initial section based on login state
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('loginButton').textContent = 'Logout';
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle form submissions
     document.getElementById('loginForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const email = document.getElementById('email').value;
@@ -123,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Settings Saved!');
     });
 
-    // Functions
+    // fun ctions
     window.showSection = function showSection(sectionId) {
         const sections = document.querySelectorAll('.section');
         sections.forEach(section => {
@@ -212,12 +209,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveTasks() {
         const user = auth.currentUser;
         if (user) {
-            // Save tasks to Firestore
             db.collection('users').doc(user.uid).set({
                 tasks: tasks
             }, { merge: true });
     
-            // Save calendar events to Firestore
             const calendarEvents = calendar.getEvents().map(event => ({
                 id: event.id,
                 title: event.title,
@@ -237,14 +232,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (docSnapshot.exists) {
                 const data = docSnapshot.data();
     
-                // Load tasks
                 tasks = data.tasks || [];
                 renderTaskList();
     
-                // Clear the calendar before adding events
                 calendar.getEvents().forEach(event => event.remove());
     
-                // Load events onto the calendar
                 const calendarEvents = data.events || [];
                 calendarEvents.forEach(eventData => {
                     calendar.addEvent({
@@ -256,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
     
-                // Load settings (as before)
                 const settings = data.settings || {};
                 document.getElementById('sidebarColor').value = settings.sidebarColor || '#cfecec';
                 document.getElementById('contentColor').value = settings.contentColor || '#e0f7fa';
@@ -268,13 +259,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     function addTaskToCalendar(task) {
-        let eventColor = task.type === 'assignment' ? '#4db6ac' : '#ffcc80'; // Example color coding
+        let eventColor = task.type === 'assignment' ? '#4db6ac' : '#ffcc80'; 
     
         calendar.addEvent({
             id: task.id,
             title: task.name,
             start: new Date(task.date),
-            end: new Date(new Date(task.date).getTime() + task.time * 60 * 60 * 1000), // Assuming task.time is in hours
+            end: new Date(new Date(task.date).getTime() + task.time * 60 * 60 * 1000), 
             color: eventColor
         });
     }
@@ -321,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     calendar.addEvent(event);
                     calendarEvents.push(event);
                     totalHours -= 1;
-                    if (totalHours > 2) break; // Split long tasks across multiple days
+                    if (totalHours > 2) break; 
                 }
             }
             currentDate.setDate(currentDate.getDate() + 1);
@@ -372,13 +363,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         calendar.addEvent(event);
                         calendarEvents.push(event);
                         hoursLeft -= 1;
-                        if (session.title.includes('Study') && hoursLeft > 1) break; // Limit study sessions to 1-2 hours per day
+                        if (session.title.includes('Study') && hoursLeft > 1) break; 
                     }
                 }
                 if (session.title.includes('Practice Test')) {
-                    startDate.setDate(startDate.getDate() + 1); // Schedule practice tests close to the test date
+                    startDate.setDate(startDate.getDate() + 1); 
                 } else {
-                    startDate.setDate(startDate.getDate() + 2); // Apply spaced repetition
+                    startDate.setDate(startDate.getDate() + 2); 
                 }
             }
         });
