@@ -45,7 +45,7 @@ h1 {
 }
 .infoHeaderText {
   color: white; 
-  max-width: 350px;
+  max-width: 300px;
   margin: 25px 100px 0px;
 
 }
@@ -115,6 +115,8 @@ h1 {
    list-style: none;
    margin: 0;
    padding: 0;
+   color: rgb(255, 255, 255);
+   font-weight: 300;
  }
  
  .nav-links li {
@@ -143,11 +145,22 @@ h1 {
 
 .nav-start:hover {
   background-color: rgba(172, 255, 47, 0.781);
+  transition-delay: 0.1s;
 }
  
  .nav-link:hover {
-   color: rgb(50, 211, 71);
+  transition-delay: 0.05s;
+   color: rgb(50, 211, 71); 
+
  } 
+ .logoImage {
+  max-width: 220px;
+
+ }
+ .logoImage:hover {
+  transition-delay: 0.05s;
+  opacity: 0.8;
+ }
  
  .sr-only {
    position: absolute;
