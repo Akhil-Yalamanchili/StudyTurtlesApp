@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
     let tasks = [];
     let calendarEvents = [];
@@ -45,11 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('loginButton').textContent = 'Logout';
             document.getElementById('loginButton').onclick = logout;
             loadUserData(user);
-            showSection('input');
         } else {
             document.getElementById('loginButton').textContent = 'Login';
             document.getElementById('loginButton').onclick = () => showSection('login');
-            showSection('login');
         }
     });
 
@@ -87,7 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const taskTime = parseInt(document.getElementById('taskTime').value);
         const taskType = document.getElementById('taskType').value;
         const taskDate = document.getElementById('taskDate').value;
-
+    
+       // alert(`Task Name: ${taskName}\nEstimated Time: ${taskTime} hours\nTask Type: ${taskType}\nDue Date/Test Date: ${taskDate}`);    
         const task = {
             id: generateId(),
             name: taskName,
@@ -157,21 +154,81 @@ document.addEventListener('DOMContentLoaded', function() {
             const taskItem = document.createElement('div');
             taskItem.className = 'task-item';
             taskItem.innerHTML = `
+            <div class="task-field">
                 <label>Task Name:</label>
-                <input type="text" value="${task.name}" data-id="${task.id}" data-field="name" onchange="updateTask(this)">
+                <input type="text" value="${task.name}" data-id="${task.id}" data-field="name">
+            </div>
+            <div class="task-field">
                 <label>Estimated Time (hours):</label>
-                <input type="number" value="${task.time}" data-id="${task.id}" data-field="time" onchange="updateTask(this)">
+                <input type="number" value="${task.time}" data-id="${task.id}" data-field="time" style="width: 50px;">
+            </div>
+            <div class="task-field">
                 <label>Task Type:</label>
-                <select data-id="${task.id}" data-field="type" onchange="updateTask(this)">
+                <select data-id="${task.id}" data-field="type">
                     <option value="assignment" ${task.type === 'assignment' ? 'selected' : ''}>Assignment</option>
                     <option value="test" ${task.type === 'test' ? 'selected' : ''}>Test</option>
                 </select>
-                <label>Due Date/Test Date (YYYY-MM-DDTHH:MM):</label>
-                <input type="datetime-local" value="${task.date}" data-id="${task.id}" data-field="date" onchange="updateTask(this)">
-                <button onclick="deleteTask('${task.id}')">Delete Task</button>
-            `;
+            </div>
+            <div class="task-field">
+                <label>Due/Test Date:</label>
+                <input type="datetime-local" value="${task.date}" data-id="${task.id}" data-field="date">
+            </div>
+            <div class="task-field">
+                <button class="delete-task" data-id="${task.id}">Delete Task</button>
+            </div>
+             <div class="task-field">
+                <button class="update-task" data-id="${task.id}">Update Task</button>
+            </div>
+        `;
             taskListView.appendChild(taskItem);
         });
+    
+        // Add event listeners for dynamically created elements
+        taskListView.addEventListener('change', function(event) {
+            const element = event.target;
+            const taskId = element.getAttribute('data-id');
+            const field = element.getAttribute('data-field');
+            const value = field === 'time' ? parseInt(element.value) : element.value;
+    
+            const task = tasks.find(task => task.id === taskId);
+            task[field] = value;
+    
+            calendar.getEvents().forEach(event => {
+                if (event.id === taskId) {
+                    event.remove();
+                }
+            });
+            if (task.type === 'assignment') {
+                scheduleAssignment(task);
+            } else if (task.type === 'test') {
+                scheduleTest(task);
+            }
+            saveTasks();
+        });
+    
+        taskListView.addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-task')) {
+                const taskId = event.target.getAttribute('data-id');
+                deleteTask(taskId);
+            }
+        });
+        taskListView.addEventListener('click', function(event) {
+            if (event.target.classList.contains('update-task')) {
+                const taskId = event.target.getAttribute('data-id');
+                updateTask(taskId);
+            }
+        });
+    }
+    
+    function deleteTask(taskId) {
+        tasks = tasks.filter(task => task.id !== taskId);
+        calendar.getEvents().forEach(event => {
+            if (event.id === taskId) {
+                event.remove();
+            }
+        });
+        renderTaskList();
+        saveTasks();
     }
 
     function updateTask(element) {
@@ -192,17 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (task.type === 'test') {
             scheduleTest(task);
         }
-        saveTasks();
-    }
-
-    function deleteTask(taskId) {
-        tasks = tasks.filter(task => task.id !== taskId);
-        calendar.getEvents().forEach(event => {
-            if (event.id === taskId) {
-                event.remove();
-            }
-        });
-        renderTaskList();
         saveTasks();
     }
 
@@ -236,6 +282,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderTaskList();
     
                 calendar.getEvents().forEach(event => event.remove());
+
+                tasks.forEach(task => addTaskToCalendar(task));
+
+                db.collection('users').doc(user.uid).collection('customFreeTime').get().then(snapshot => {
+                    snapshot.forEach(doc => {
+                        const freeTimeData = doc.data();
+                        calendar.addEvent({
+                            start: freeTimeData.start,
+                            end:freeTimeData.end,
+                            title: "Free Time",
+                            color: "#d1f7c4",
+                            isFreeTime: true
+                        });
+                    });
+                });
     
                 const calendarEvents = data.events || [];
                 calendarEvents.forEach(eventData => {
@@ -254,7 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('textColor').value = settings.textColor || '#000000';
                 document.querySelector('.sidebar').style.backgroundColor = settings.sidebarColor || '#cfecec';
                 document.querySelector('.content').style.backgroundColor = settings.contentColor || '#e0f7fa';
-                document.documentElement.style.setProperty('--text-color', settings.textColor || '#000000');
+                document.querySelector('.defaultStartTime').value = settings.defaultStartTime || '#e0f7fa';
+                document.querySelector('.defaultStartTime').value = settings.defaultEndTime || '17:00';
             }
         });
     }
@@ -269,6 +331,26 @@ document.addEventListener('DOMContentLoaded', function() {
             color: eventColor
         });
     }
+
+    calendar.on('select', function(info) {
+        const event = calendar.addEvent({
+            start: info.start,
+            end: info.end,
+            title: "Free Time",
+            color: "#d1f7c4", // A unique color for free time
+            isFreeTime: true // Custom property to identify free time blocks
+        });
+    
+        // Save this custom free time block to Firestore
+        const user = auth.currentUser;
+        if (user) {
+            db.collection('users').doc(user.uid).collection('customFreeTime').add({
+                start: info.start.toISOString(),
+                end: info.end.toISOString(),
+                isFreeTime: true
+            });
+        }
+    });
     
     function saveSettings() {
         const user = auth.currentUser;
@@ -276,7 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const settings = {
                 sidebarColor: document.getElementById('sidebarColor').value,
                 contentColor: document.getElementById('contentColor').value,
-                textColor: document.getElementById('textColor').value
+                textColor: document.getElementById('textColor').value,
+                defaultStartTime: document.getElementById('defaultStartTime').value,
+                defaultEndTime: document.getElementById('defaultEndTime').value,
+
             };
             db.collection('users').doc(user.uid).set({
                 settings: settings
@@ -288,37 +373,84 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalHours = task.time;
         const dueDate = new Date(task.date);
         let currentDate = new Date();
-
+    
         while (totalHours > 0 && currentDate < dueDate) {
-            const startOfDay = new Date(currentDate);
-            startOfDay.setHours(9, 0, 0, 0);
-            const endOfDay = new Date(currentDate);
-            endOfDay.setHours(17, 0, 0, 0);
-
-            for (let hour = 9; hour < 17 && totalHours > 0; hour++) {
-                const startDate = new Date(currentDate);
-                startDate.setHours(hour, 0, 0, 0);
-                const endDate = new Date(startDate.getTime());
-                endDate.setHours(startDate.getHours() + 1);
-
-                if (!hasEventConflict(startDate, endDate)) {
-                    const event = {
-                        id: task.id,
-                        title: task.name,
-                        start: startDate.toISOString(),
-                        end: endDate.toISOString(),
-                        color: '#4db6ac'
-                    };
-                    calendar.addEvent(event);
-                    calendarEvents.push(event);
-                    totalHours -= 1;
-                    if (totalHours > 2) break; 
+            const freeBlocks = getFreeTimeBlocks(currentDate);
+            // Try to fit task into each free time block without scheduling too many consecutive hours
+            for (const block of freeBlocks) {
+                let blockStart = new Date(block.start);
+                while (blockStart < block.end && totalHours > 0) {
+                    const endOfHour = new Date(blockStart);
+                    endOfHour.setHours(blockStart.getHours() + 1);
+                    if (!hasEventConflict(blockStart, endOfHour) && totalHours > 0) {
+                        calendar.addEvent({
+                            id: task.id,
+                            title: task.name,
+                            start: blockStart.toISOString(),
+                            end: endOfHour.toISOString(),
+                            color: "#4db6ac"
+                        });
+                        totalHours -= 1;
+                        // Avoid burnout by skipping consecutive days if more than 2 hours remain
+                        if (totalHours > 2) break;
+                    }
+    
+                    blockStart = endOfHour;
                 }
+                if (totalHours <= 0) break;
             }
+    
             currentDate.setDate(currentDate.getDate() + 1);
         }
     }
-
+    
+function animateText() {
+    // Function to animate the text "What will you create today?"
+    const animatedTextElement = document.getElementById('animatedText');
+    animatedTextElement.textContent = "What will you create today?";
+    animatedTextElement.style.animationPlayState = 'paused';
+    setTimeout(() => {
+        animatedTextElement.style.animationPlayState = 'running';
+    }, 0);
+}
+    // Helper function to get free time blocks
+    function getFreeTimeBlocks(date) {
+        // First, look for custom blocks for this specific day
+        const customBlocks = calendar.getEvents().filter(event =>
+            event.extendedProps.isFreeTime && sameDay(event.start, date)
+        );
+    
+        if (customBlocks.length > 0) return customBlocks;
+        // Otherwise, fall back to default free time
+        const settings = getCurrentUserSettings();
+        if (settings.defaultStartTime && settings.defaultEndTime) {
+            const startTime = new Date(date);
+            const endTime = new Date(date);
+            startTime.setHours(...settings.defaultStartTime.split(':'));
+            endTime.setHours(...settings.defaultEndTime.split(':'));
+            return [{ start: startTime, end: endTime }];
+        }
+        return [];
+    }
+    function getCurrentUserSettings() {
+        const user = auth.currentUser;
+        if (user) {
+            return db.collection('users').doc(user.uid).get().then(doc => {
+                if (doc.exists) {
+                    return doc.data().settings || {};
+                } else {
+                    console.log("No settings found for user.");
+                    return {};
+                }
+            }).catch(error => {
+                console.error("Error getting user settings:", error);
+                return {};
+            });
+        } else {
+            console.log("No user is currently signed in.");
+            return Promise.resolve({});
+        }
+    }
     function scheduleTest(task) {
         const totalHours = task.time;
         const dueDate = new Date(task.date);
@@ -377,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function hasEventConflict(startDate, endDate) {
         return calendar.getEvents().some(event => {
-            return (startDate < new Date(event.end) && endDate > new Date(event.start));
+            return (startDate < new Date(event.end) && endDate > new Date(event.start) && !event.extendedProps.isFreeTime);
         });
     }
 
@@ -388,4 +520,76 @@ document.addEventListener('DOMContentLoaded', function() {
             updatedEvent.end = event.end.toISOString();
         }
     }
+
+    const messageArea = document.getElementById("messageArea");
+    const chatInput = document.getElementById("chatInput");
+    const sendButton = document.getElementById("sendButton");
+
+    function addMessage(message, sender) {
+        const messageElement = document.createElement("div");
+        messageElement.style.padding = "10px";
+        messageElement.style.margin="5px";
+        messageElement.style.color = "white";
+
+
+        if (sender === "user") {
+            messageElement.style.textAlign = "right";
+            messageElement.style.backgroundColor = "rgb(72, 101, 120)";
+
+        } else {
+            messageElement.style.textAlign = "left";
+            messageElement.style.backgroundColor = "rgb(60, 80, 90)";
+
+        }
+        messageElement.textContent = message;
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    async function sendMessagetoAI(userMessage) {
+        addMessage(userMessage, "user");
+        chatInput.value = "";
+
+       // try {
+       //     const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          //      method: "POST",
+        //        headers: {
+       //             "Content-Type": "application/json",
+                
+      //          },
+        //        body: JSON.stringify({
+        //            model: "gpt-4o-mini-2024-07-18",
+        //            messages: [
+       //                 { role:"system", content: "You are a helpful and friendly AI turtle who assists with studying. You know this user's habits, and are trying to help them learn and plan their studying in an optimal way to maximize their learning."},
+         //               { role: "user", content: userMessage}
+           //         ]
+             //   })
+  //          });
+    //        const data = await response.json();
+      //      const aiMessage = data.choices[0].message.content;
+
+        //    addMessage(aiMessage, "turtle");
+        //} catch (error) {
+          //  alert("Error communicating with OpenAI API: ", error);
+      //      alert(error);
+       //     addMessage("Oops! Something went wront. Please try again.", "turtle");
+      //  }
+    }
+
+    sendButton.addEventListener("click", () => {
+        const userMessage = chatInput.value.trim();
+        if (userMessage) {
+            sendMessagetoAI(userMessage);
+        }
+    });
+
+    chatInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            const userMessage = chatInput.value.trim();
+            if (userMessage) {
+                sendMessagetoAI(userMessage);
+            }
+        }
+    });
+
 });

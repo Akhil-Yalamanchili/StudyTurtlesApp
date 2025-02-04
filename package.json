@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "firebase": "^10.13.1",
-    "fullcalendar": "^6.1.15"
+    "fullcalendar": "^6.1.15",
+    "openai": "^4.80.1"
   }
 }

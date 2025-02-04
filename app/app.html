@@ -15,30 +15,31 @@
 </head>
 <body onload="loadUserData()">
     <div class="sidebar">
-        <a href="#" onclick="showSection('home')"><img src = "../images/studyturtlesbrand.png" alt = "Study Turtles"></a>
+        <a href="#" onclick="showSection('home')"><img src = "../images/studyturtlesbrandnobg.png" alt = "Study Turtles"></a>
         <a href="#" onclick="showSection('input')">Task Input</a>
         <a href="#" onclick="showSection('taskList')">Task List</a>
         <a href="#" onclick="showSection('calendar')">Calendar</a>
+        <a href="#" onclick="showSection('turtleai')">TurtleAI</a>
         <a href="#" onclick="showSection('education')">Learn</a>
         <a href="#" onclick="showSection('settings')">Settings</a>
-        <a href="#" onclick="showSection('login')" id="loginButton">Login</a>
+        <a href="#" onclick="showSection('login')" id="loginButton">Profile</a>
     </div>
     <div class="content">
         <div id="input" class="section" style="display: none;">
             <h2>Task Input</h2>
-            <form id="taskForm">
+            <form id="taskForm" style="width: 75vw;">
                 <label for="taskName">Task Name:</label>
                 <input type="text" id="taskName" name="taskName" required>
                 <label for="taskTime">Estimated Time (hours):</label>
                 <input type="number" id="taskTime" name="taskTime" required>
                 <label for="taskType">Task Type:</label>
-                <select id="taskType" name="taskType">
+                <select style="width: 76.5vw;" id="taskType" name="taskType">
                     <option value="assignment">Assignment</option>
                     <option value="test">Test</option>
                 </select>
-                <label for="taskDate">Due Date/Test Date (YYYY-MM-DDTHH:MM):</label>
+                <label for="taskDate">Due Date/Test Date:</label>
                 <input type="datetime-local" id="taskDate" name="taskDate" required>
-                <button type="submit">Add Task</button>
+                <button style="width:76.5vw;" type="submit">Add Task</button>
             </form>
         </div>
         <div id="taskList" class="section" style="display: none;">
@@ -72,8 +73,24 @@
                 <input type="color" id="contentColor" name="contentColor">
                 <label for="textColor">Text Color:</label>
                 <input type="color" id="textColor" name="textColor">
+                <label for="defaultStartTime">Default Free Time Start:</label>
+                <input type = "time" id="defaultStartTime" name = "defaultStartTime">
+                <label for="defaultEndTime">Default Free Time End:</label>
+                <input type = "time" id="defaultEndTime" name = "defaultEndTime">
                 <button type="submit">Save Settings</button>
             </form>
+        </div>
+        <div id="turtleai" class="section" style="display:none;">
+            <h2 style="margin-bottom: 0;">Turtle AI</h2>
+            <div style="padding: 0; background-color:rgb(72, 81, 87); height: 80vh; width: 75vw; position: relative; left: 2vw; top: 5vh; margin-top:0px;">
+                <div id="messageArea" style="overflow-y: auto;background-color:rgb(54, 57, 59); height: 65vh; width: 75vw; position: relative; margin-top:0px;">
+                </div>
+                <div style="background-color:rgb(99, 99, 99); height: 15vh; width: 74.3vw; position: relative; margin-top:0px; padding: 5px;">
+                    <input id="chatInput" style="padding-left: 20px; padding-right: 40px; border-radius:5px; color: rgb(228, 228, 228); background-color:rgb(96, 107, 114); height: 14vh; width: 69.5vw; position: relative; margin-top:0px; overflow-y: auto;" type="text" placeholder="Talk to your Study Turtle">
+                    <img id="sendButton" src="/images/whitearrow.png" alt="arrowimage" style="max-height: 30px;position:absolute; right: 3vw; bottom: 5vh;">
+
+                </div>
+            </div>
         </div>
         <div id="login" class="section" style="display: none;">
             <h2>Login</h2>
@@ -189,5 +206,11 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
       </script>
+      <script type="module">
+            import OpenAI from "openai";
+
+            const openai = new OpenAI()
+      </script>
+      <script src="openai.mjs" type="module"></script>
 </body>
 </html>

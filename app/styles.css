@@ -3,7 +3,7 @@ body {
     display: flex;
     height: 100vh;
     margin: 0;
-    color: var(--text-color, black); /* Default text color */
+    color: var(--text-color, white); /* Default text color */
 }
 
 img {
@@ -23,7 +23,7 @@ ul li {
     float: left;
 }
 .sidebar {
-    background-color: rgb(77,182,172);
+    background-color: rgb(31,29,32);
     width: 200px;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -45,7 +45,7 @@ ul li {
 .content {
     flex: 1;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: rgb(42, 40, 47);
     overflow: auto;
 }
 
@@ -97,6 +97,18 @@ form input, form select, form button {
     font-size: 16px;
 }
 
+::placeholder {
+    color: rgb(224, 224, 224);
+    opacity: 1; /* Firefox */
+    margin-left: 20px;
+  }
+  
+  ::-ms-input-placeholder { /* Edge 12 -18 */
+    color: rgb(221, 221, 221);
+    margin-left: 20px;
+
+  }
+
 form button {
     background-color: #4db6ac;
     color: white;
@@ -132,6 +144,11 @@ form button:hover {
 .task-item {
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    flex-direction: row;
+    column-gap: 20px;
 }
 
 .task-item:last-child {
@@ -142,8 +159,9 @@ form button:hover {
     margin-top: 5px;
 }
 
-.task-item button {
+.task-item .delete-task {
     margin-top: 10px;
+    margin-left: 5px;
     background-color: #f44336;
     color: white;   
     border: none;
@@ -151,8 +169,21 @@ form button:hover {
     cursor: pointer;
 }
 
-.task-item button:hover {
+.task-item .update-task {
+    margin-top: 10px;
+    margin-left: 5px;
+    background-color: #1c992c;
+    color: white;   
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.task-item .delete-task:hover {
     background-color: #d32f2f;
+}
+.task-item .update-task:hover {
+    background-color: #10751e;
 }
 
 .eventTextColor {
