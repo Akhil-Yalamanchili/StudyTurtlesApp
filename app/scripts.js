@@ -550,11 +550,19 @@ function animateText() {
         addMessage(userMessage, "user");
         chatInput.value = "";
 
+<<<<<<< HEAD
        // try {
        //     const response = await fetch("https://api.openai.com/v1/chat/completions", {
           //      method: "POST",
         //        headers: {
        //             "Content-Type": "application/json",
+=======
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+>>>>>>> 6e3aba7 (fixes)
                 
       //          },
         //        body: JSON.stringify({
